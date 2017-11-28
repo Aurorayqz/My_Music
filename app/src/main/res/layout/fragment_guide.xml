@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="aurorayqz.packagecom.myapplication.ui.guide.GuideFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <aurorayqz.packagecom.myapplication.ui.widget.CustomView
+        android:id="@+id/cv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
