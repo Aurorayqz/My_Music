@@ -1,6 +1,7 @@
 package aurorayqz.packagecom.myapplication.ui.local;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,7 +19,9 @@ import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.model.event.ILocalView;
 import aurorayqz.packagecom.myapplication.ui.adapter.LocalRecyclerAdapter;
+import aurorayqz.packagecom.myapplication.ui.adapter.OnItemClickListener;
 import aurorayqz.packagecom.myapplication.ui.cnmusic.BaseFragment;
+import aurorayqz.packagecom.myapplication.ui.play.PlayingActivity;
 import aurorayqz.packagecom.myapplication.ui.presenter.LocalLibraryPresenter;
 
 /***
@@ -37,7 +40,7 @@ import aurorayqz.packagecom.myapplication.ui.presenter.LocalLibraryPresenter;
 public class LocalMusicFragment extends BaseFragment implements ILocalView.LocalMusic{
 
     private RecyclerView mRecyclerView;
-    private LocalRecyclerAdapter mAdapter;
+    private LocalRecyclerAdapter mRecyclerAdapter;
     private LocalLibraryPresenter mLibraryPresenter;
 
     public static LocalMusicFragment newInstance() {
@@ -68,13 +71,25 @@ public class LocalMusicFragment extends BaseFragment implements ILocalView.Local
      * @param inflate
      */
     private void initRecyclerView(View inflate) {
+        mRecyclerAdapter = new LocalRecyclerAdapter(getActivity());
         mRecyclerView = (RecyclerView) inflate.findViewById(R.id.recycler_view);
-
-        mAdapter = new LocalRecyclerAdapter(getActivity());
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerAdapter.setItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(Object item, int position) {
+                Log.e("onItemClick: ", "onItemClick: ");
+
+                startActivity(new Intent(getActivity(), PlayingActivity.class));
+            }
+
+            @Override
+            public void onItemSettingClick(View v, Object item, int position) {
+
+            }
+        });
 
         mLibraryPresenter.requestMusic();
 
@@ -84,7 +99,7 @@ public class LocalMusicFragment extends BaseFragment implements ILocalView.Local
     @Override
     public void getLocalMusicSuccess(List<Song> songs) {
         //获取到本地音乐的数据
-        mAdapter.setData(songs);
+        mRecyclerAdapter.setData(songs);
 
     }
 
