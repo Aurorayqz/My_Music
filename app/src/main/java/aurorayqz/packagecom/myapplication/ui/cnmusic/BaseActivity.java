@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import aurorayqz.packagecom.myapplication.R;
+import aurorayqz.packagecom.myapplication.service.MusicServiceHelper;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -18,6 +19,9 @@ public class BaseActivity extends AppCompatActivity {
         //默认屏幕不能横屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         //setContentView(R.layout.activity_base);
+
+        //服务的初始化
+        MusicServiceHelper.get(getApplicationContext()).initService();
     }
 
     /***
