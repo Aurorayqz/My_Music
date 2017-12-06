@@ -9,37 +9,51 @@ import android.os.Bundle;
 import android.view.View;
 
 import aurorayqz.packagecom.myapplication.R;
+import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
 import aurorayqz.packagecom.myapplication.service.MusicServiceHelper;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_FAST_FORWARDING;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_REWINDING;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED;
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity  {
+
+    private String TAG = "BaseActivity";
+
+    /**
+     * @param outState 取消保存状态
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        //super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * @param savedInstanceState 取消保存状态
+     */
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        //super.onRestoreInstanceState(savedInstanceState);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //默认屏幕不能横屏
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        //setContentView(R.layout.activity_base);
-
         //服务的初始化
-        MusicServiceHelper.get(getApplicationContext()).initService();
+        MusicPlayerManager.startServiceIfNecessary(getApplicationContext());
+
     }
 
-    /***
-     * snackbar的显示
-     * @param view
-     * @param text
-     */
-    public void showSnackBar(View view,@Nullable String text){
-        Snackbar.make(view,text,Snackbar.LENGTH_SHORT).show();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Unbind from the service
+        unbindService();
     }
 
-    public void showSnackBar(View view,int resID){
-        Snackbar.make(view,resID,Snackbar.LENGTH_SHORT).show();
+    public void unbindService() {
+
     }
 
-    public void startToActivity(Class activity){
-        Intent intent=new Intent();
-        intent.setClass(this,activity);
-        startActivity(intent);
-    }
 }

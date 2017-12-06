@@ -21,7 +21,7 @@ public class WelcomeActivity extends BaseActivity {
     private ImageView mLogo;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
@@ -50,7 +50,7 @@ public class WelcomeActivity extends BaseActivity {
 
                 //2.需要跳转界面
 
-                startToActivity(GuideActivity.class);
+                //startToActivity(GuideActivity.class);
                 finish();
             }
         });

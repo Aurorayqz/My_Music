@@ -1,10 +1,8 @@
 package aurorayqz.packagecom.myapplication.ui.local;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,16 +10,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Iterator;
 import java.util.List;
 
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.data.Song;
-import aurorayqz.packagecom.myapplication.model.event.ILocalView;
+import aurorayqz.packagecom.myapplication.model.event.LocalIView;
+import aurorayqz.packagecom.myapplication.music.MusicPlaylist;
+import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
 import aurorayqz.packagecom.myapplication.ui.adapter.LocalRecyclerAdapter;
 import aurorayqz.packagecom.myapplication.ui.adapter.OnItemClickListener;
 import aurorayqz.packagecom.myapplication.ui.cnmusic.BaseFragment;
-import aurorayqz.packagecom.myapplication.ui.play.PlayingActivity;
 import aurorayqz.packagecom.myapplication.ui.presenter.LocalLibraryPresenter;
 
 /***
@@ -37,11 +35,12 @@ import aurorayqz.packagecom.myapplication.ui.presenter.LocalLibraryPresenter;
  * 5.歌曲如何存取
  *
  */
-public class LocalMusicFragment extends BaseFragment implements ILocalView.LocalMusic{
+public class LocalMusicFragment extends BaseFragment implements LocalIView.LocalMusic{
 
     private RecyclerView mRecyclerView;
     private LocalRecyclerAdapter mRecyclerAdapter;
     private LocalLibraryPresenter mLibraryPresenter;
+    private MusicPlaylist musicPlayList;
 
     public static LocalMusicFragment newInstance() {
         LocalMusicFragment fragment = new LocalMusicFragment();
@@ -51,8 +50,8 @@ public class LocalMusicFragment extends BaseFragment implements ILocalView.Local
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mLibraryPresenter = new LocalLibraryPresenter(getActivity(), this);
-
+        mLibraryPresenter = new LocalLibraryPresenter(this,getActivity());
+        musicPlayList = new MusicPlaylist();
 
     }
 
@@ -81,8 +80,8 @@ public class LocalMusicFragment extends BaseFragment implements ILocalView.Local
             @Override
             public void onItemClick(Object item, int position) {
                 Log.e("onItemClick: ", "onItemClick: ");
-
-                startActivity(new Intent(getActivity(), PlayingActivity.class));
+                MusicPlayerManager.get().playQueue(musicPlayList,position);
+                gotoSongPlayerActivity();
             }
 
             @Override
@@ -95,17 +94,10 @@ public class LocalMusicFragment extends BaseFragment implements ILocalView.Local
 
     }
 
-
     @Override
-    public void getLocalMusicSuccess(List<Song> songs) {
-        //获取到本地音乐的数据
+    public void getLocalMusic(List<Song> songs) {
+        musicPlayList.setQueue(songs);
+        musicPlayList.setTitle("本地歌曲");
         mRecyclerAdapter.setData(songs);
-
-    }
-
-    @Override
-    public void getLocalMusicFail(Throwable throwable) {
-        //获取失败
-
     }
 }

@@ -3,12 +3,11 @@ package aurorayqz.packagecom.myapplication.ui.presenter;
 import android.content.Context;
 import android.util.Log;
 
-import java.util.Iterator;
 import java.util.List;
 
 import aurorayqz.packagecom.myapplication.common.util.LocalMusicLibrary;
 import aurorayqz.packagecom.myapplication.data.Song;
-import aurorayqz.packagecom.myapplication.model.event.ILocalView;
+import aurorayqz.packagecom.myapplication.model.event.LocalIView;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -20,52 +19,48 @@ import rx.schedulers.Schedulers;
  * Created by Aurorayqz on 2017/11/18.
  */
 
+/**
+ * presenter层进行调用Model
+ */
 public class LocalLibraryPresenter {
-    private Context mContext;
-    private ILocalView.LocalMusic mILocalView;
 
-    public LocalLibraryPresenter (Context context,ILocalView.LocalMusic iLocalView){
+    private LocalIView.LocalMusic mLocalMusic;
+
+    private Context mContext;
+
+
+    public LocalLibraryPresenter(LocalIView.LocalMusic localMusic, Context context) {
+        this.mLocalMusic = localMusic;
         this.mContext = context;
-        this.mILocalView = iLocalView;
     }
 
-
     /***
-     * 获取本地音乐
+     * 请求获取本地歌曲
      */
     public void requestMusic(){
-        Observable.create(new Observable.OnSubscribe<List<Song>>() {
-            @Override
-            public void call(Subscriber<? super List<Song>> subscriber) {
-                //从底层获取的本地音乐
-                List<Song> songs = LocalMusicLibrary.getAllSongs(mContext);
-                subscriber.onNext(songs);
-            }
-        }).subscribeOn(Schedulers.newThread())
+        Observable.create(
+                new Observable.OnSubscribe<List<Song>>() {
+                    @Override
+                    public void call(Subscriber<? super List<Song>> subscriber) {
+                        List<Song> songs = LocalMusicLibrary.getAllSongs(mContext);
+                        subscriber.onNext(songs);
+                    }
+                }).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Action1<List<Song>>() {
                     @Override
                     public void call(List<Song> songs) {
-                        //歌曲获取成功
-                        if(mILocalView !=null){
-                            mILocalView.getLocalMusicSuccess(songs);
-                        }
-                        Log.d("TAG","歌曲数量为"+songs.size());
-                        Iterator<Song> it=songs.iterator();
-                        while (it.hasNext())
-                        {
-                            Log.d("TAG","歌曲命名为"+it.next().getTitle());
-                        }
+                        if (mLocalMusic != null)
+                            mLocalMusic.getLocalMusic(songs);
+
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        //歌曲获取失败
-                        mILocalView.getLocalMusicFail(throwable);
+//                        MoeLogger.e(throwable.toString());
+                        Log.e("call: ", "call: "+throwable.toString());
                     }
                 });
-
-
     }
 
 }

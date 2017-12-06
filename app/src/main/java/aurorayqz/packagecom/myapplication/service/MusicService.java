@@ -82,7 +82,7 @@ public class MusicService extends Service {
     /****
      * 设置播放状态
      */
-    private void setState(int state) {
+    public void setState(int state) {
         mState = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY|

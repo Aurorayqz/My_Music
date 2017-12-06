@@ -34,7 +34,7 @@ public class GuideActivity extends BaseActivity {
     private ArrayList<Fragment> fragments;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_guide);
         ButterKnife.bind(this);

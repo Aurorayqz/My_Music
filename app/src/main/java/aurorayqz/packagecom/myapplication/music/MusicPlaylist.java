@@ -6,8 +6,10 @@ package aurorayqz.packagecom.myapplication.music;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import aurorayqz.packagecom.myapplication.data.Song;
+import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
 
 /**
  * @desciption: 播放列表
@@ -109,5 +111,58 @@ public class MusicPlaylist {
 
     public void setAlbumID(long albumID) {
         this.albumID = albumID;
+    }
+
+    /***
+     * 获取队列中的上一首歌曲
+     * @return
+     */
+    public Song getPreSong(){
+        int currentPos = queue.indexOf(curSong);
+        //歌曲的播放模式
+        int playMode = MusicPlayerManager.get().getPlayMode();
+        if(playMode == MusicPlayerManager.SINGLETYPE ||
+                playMode == MusicPlayerManager.CYCLETYPE){
+            if(--currentPos < 0 ){
+                currentPos = 0;
+            }
+        }else {
+            currentPos = new Random().nextInt(queue.size());
+        }
+        curSong = queue.get(currentPos);
+
+
+        return curSong;
+    }
+
+
+    /***
+     * 获取队列中的下一首歌曲
+     * @return
+     */
+    public Song getNextSong(){
+        int currentPos = queue.indexOf(curSong);
+        //歌曲的播放模式
+        int playMode = MusicPlayerManager.get().getPlayMode();
+        if(playMode == MusicPlayerManager.SINGLETYPE ||
+                playMode == MusicPlayerManager.CYCLETYPE){
+            if(++currentPos < 0 ){
+                currentPos = 0;
+            }
+        }else {
+            currentPos = new Random().nextInt(queue.size());
+        }
+        curSong = queue.get(currentPos);
+
+
+        return curSong;
+    }
+
+    /***
+     * 清除列表当前歌曲
+     */
+    public void clear(){
+        queue.clear();
+        curSong = null;
     }
 }

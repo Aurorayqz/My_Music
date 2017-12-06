@@ -8,8 +8,11 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import aurorayqz.packagecom.myapplication.R;
+import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
+import aurorayqz.packagecom.myapplication.ui.play.PlayingActivity;
 import kr.co.namee.permissiongen.PermissionGen;
 
 /**
@@ -41,6 +44,19 @@ public class BaseFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_base, container, false);
+    }
+
+    public void showToast(int toastRes) {
+        Toast.makeText(getActivity(), getString(toastRes), Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean gotoSongPlayerActivity(){
+        if(MusicPlayerManager.get().getPlayingSong() == null){
+            showToast(R.string.music_playing_none);
+            return false;
+        }
+        PlayingActivity.open(getActivity());
+        return true;
     }
 
 }
