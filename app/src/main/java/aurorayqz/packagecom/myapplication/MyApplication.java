@@ -14,11 +14,17 @@ import com.bilibili.magicasakura.utils.ThemeUtils;
 public class MyApplication extends Application implements ThemeUtils.switchColor{
     public static Context context;
 
+    private static MyApplication instance;
+
+    public static MyApplication getInstance(){
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
-
+        instance = this;
         ThemeUtils.setSwitchColor(this);
 
     }

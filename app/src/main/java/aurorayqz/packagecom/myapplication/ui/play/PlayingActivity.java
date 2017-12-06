@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -243,5 +244,15 @@ public class PlayingActivity extends BaseActivity implements OnSongchangeListene
         context.startActivity(intent);
     }
 
+    //设置返回按钮
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        // TODO Auto-generated method stub
+//        if (item.getItemId() == android.R.id.home) {
+//            onBackPressed();
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
 }
