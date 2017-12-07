@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.music.MusicPlaylist;
+import aurorayqz.packagecom.myapplication.ui.cnmusic.RecentPlayListActivity;
+
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_FAST_FORWARDING;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING;
@@ -486,4 +488,6 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
     public void onSeekComplete(MediaPlayer mediaPlayer) {
 
     }
+
+
 }

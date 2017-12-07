@@ -45,6 +45,7 @@ dependencies {
     compile 'com.lovedise:permissiongen:0.0.6'
     compile 'com.android.support:percent:26.+'
     compile 'com.android.support:support-v13:26.+'
+    compile 'com.lb:materialdesigndialog:1.0.0'
     testCompile 'junit:junit:4.12'
 }
 

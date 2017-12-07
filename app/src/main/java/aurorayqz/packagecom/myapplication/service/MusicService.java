@@ -11,8 +11,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import java.io.IOException;
+
+import aurorayqz.packagecom.myapplication.data.Song;
+import aurorayqz.packagecom.myapplication.music.MusicRecentPlayList;
 
 /***
  * 音乐播放的服务
@@ -23,7 +27,8 @@ import java.io.IOException;
  * 4.音乐播放的管理
  */
 
-public class MusicService extends Service {
+
+public class MusicService extends Service implements OnSongchangeListener{
 
 
 
@@ -33,6 +38,17 @@ public class MusicService extends Service {
     private MusicPlayerManager playerManager;
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat mState;
+
+    @Override
+    public void onSongChanged(Song song) {
+        //添加播放过的歌曲
+        MusicRecentPlayList.getInstance().addPlaySong(song);
+    }
+
+    @Override
+    public void onPlayBackStateChanged(PlaybackStateCompat state) {
+
+    }
 
     public class MyBinder extends Binder{
         public MusicService getMusicService(){
@@ -112,6 +128,7 @@ public class MusicService extends Service {
      * @return
      */
     public int getState(){
+        Log.e("getState: ", "getState: " +mState.getState());
         return mState.getState();
     }
 
@@ -130,9 +147,6 @@ public class MusicService extends Service {
 
     }
 
-    public void stopServiec(){
-        stopSelf();
-    }
 
 
     public class MidiaSessionCallback extends MediaSessionCompat.Callback {

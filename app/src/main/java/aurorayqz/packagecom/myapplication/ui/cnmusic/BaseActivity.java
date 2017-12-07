@@ -3,14 +3,18 @@ package aurorayqz.packagecom.myapplication.ui.cnmusic;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
 import aurorayqz.packagecom.myapplication.service.MusicServiceHelper;
+import aurorayqz.packagecom.myapplication.ui.play.PlayingActivity;
+
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_FAST_FORWARDING;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING;
@@ -38,7 +42,7 @@ public class BaseActivity extends AppCompatActivity  {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //服务的初始化
         MusicPlayerManager.startServiceIfNecessary(getApplicationContext());
@@ -55,5 +59,35 @@ public class BaseActivity extends AppCompatActivity  {
     public void unbindService() {
 
     }
+    /**
+     * 跳转到音乐播放界面
+     * @return
+     */
+    public boolean gotoSongPlayerActivity() {
+        if (MusicPlayerManager.get().getPlayingSong() == null) {
+            showToast(R.string.music_playing_none);
+            return false;
+        }
+        PlayingActivity.open(this);
+        return true;
+    }
+
+    /**
+     * snackbar的显示
+     *
+     * @param toast
+     */
+    public void showSnackBar(View view, String toast) {
+        Snackbar.make(view, toast, Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void showSnackBar(View view, @StringRes int toast) {
+        Snackbar.make(view, getString(toast), Snackbar.LENGTH_SHORT).show();
+    }
+
+    public void showToast(int toastRes) {
+        Toast.makeText(this, getString(toastRes), Toast.LENGTH_SHORT).show();
+    }
+
 
 }

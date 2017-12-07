@@ -244,15 +244,15 @@ public class PlayingActivity extends BaseActivity implements OnSongchangeListene
         context.startActivity(intent);
     }
 
-    //设置返回按钮
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // TODO Auto-generated method stub
-//        if (item.getItemId() == android.R.id.home) {
-//            onBackPressed();
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+//    设置返回按钮
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // TODO Auto-generated method stub
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }
