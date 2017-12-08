@@ -1,25 +1,17 @@
-package aurorayqz.packagecom.myapplication.ui.cnmusic;
+package aurorayqz.packagecom.myapplication;
 
-import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import aurorayqz.packagecom.myapplication.R;
-import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
-import aurorayqz.packagecom.myapplication.service.MusicServiceHelper;
-import aurorayqz.packagecom.myapplication.ui.play.PlayingActivity;
 
-import static android.support.v4.media.session.PlaybackStateCompat.STATE_FAST_FORWARDING;
-import static android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED;
-import static android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING;
-import static android.support.v4.media.session.PlaybackStateCompat.STATE_REWINDING;
-import static android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED;
+import aurorayqz.packagecom.myapplication.ui.cnmusic.BottomFragment;
+import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
+import aurorayqz.packagecom.myapplication.ui.play.PlayingActivity;
 
 public class BaseActivity extends AppCompatActivity  {
 
@@ -46,6 +38,7 @@ public class BaseActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         //服务的初始化
         MusicPlayerManager.startServiceIfNecessary(getApplicationContext());
+        showQuickControl(true);
 
     }
 
@@ -89,5 +82,24 @@ public class BaseActivity extends AppCompatActivity  {
         Toast.makeText(this, getString(toastRes), Toast.LENGTH_SHORT).show();
     }
 
+    private BottomFragment fragment; //底部播放控制栏
+    /**
+     * @param show 显示或关闭底部播放控制栏
+     */
+    protected void showQuickControl(boolean show) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        if (show) {
+            if (fragment == null) {
+                fragment = BottomFragment.newInstance();
+                ft.add(R.id.bottom_container, fragment).commitAllowingStateLoss();
+            } else {
+                ft.show(fragment).commitAllowingStateLoss();
+            }
+        } else {
+            if (fragment != null)
+                ft.hide(fragment).commitAllowingStateLoss();
+        }
+    }
 
 }
+

@@ -15,27 +15,20 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import com.bilibili.magicasakura.widgets.TintToolbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import aurorayqz.packagecom.myapplication.BaseActivity;
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.ui.album.AlbumFragment;
 import aurorayqz.packagecom.myapplication.ui.local.LocalFragment;
-import aurorayqz.packagecom.myapplication.ui.radio.RadioFragment;
 import aurorayqz.packagecom.myapplication.ui.widget.CustomViewPager;
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity  {
+public class MainActivity extends BaseActivity {
     private ActionBar ab;
     private ImageView barnet, barmusic;
     private ArrayList<ImageView> tabs = new ArrayList<>();

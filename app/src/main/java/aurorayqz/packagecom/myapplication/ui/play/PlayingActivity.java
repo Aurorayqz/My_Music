@@ -1,15 +1,10 @@
 package aurorayqz.packagecom.myapplication.ui.play;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.IBinder;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
@@ -21,17 +16,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.common.util.ImageUtils;
-import aurorayqz.packagecom.myapplication.common.util.LocalMusicLibrary;
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
-import aurorayqz.packagecom.myapplication.service.MusicService;
 import aurorayqz.packagecom.myapplication.service.OnSongchangeListener;
-import aurorayqz.packagecom.myapplication.ui.cnmusic.BaseActivity;
+import aurorayqz.packagecom.myapplication.BaseActivity;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -39,9 +31,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-import static aurorayqz.packagecom.myapplication.service.MusicService.mediaPlayer;
-
-public class PlayingActivity extends BaseActivity implements OnSongchangeListener {
+public class PlayingActivity extends AppCompatActivity implements OnSongchangeListener {
 
 
     /**

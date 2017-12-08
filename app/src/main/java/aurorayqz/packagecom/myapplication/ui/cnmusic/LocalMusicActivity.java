@@ -3,12 +3,12 @@ package aurorayqz.packagecom.myapplication.ui.cnmusic;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import aurorayqz.packagecom.myapplication.BaseActivity;
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.ui.adapter.LocalMusicAdapter;
 import butterknife.Bind;

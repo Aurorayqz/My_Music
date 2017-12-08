@@ -1,12 +1,9 @@
 package aurorayqz.packagecom.myapplication.ui.guide;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Button;
@@ -15,7 +12,7 @@ import android.widget.ImageView;
 import java.util.ArrayList;
 
 import aurorayqz.packagecom.myapplication.R;
-import aurorayqz.packagecom.myapplication.ui.cnmusic.BaseActivity;
+import aurorayqz.packagecom.myapplication.BaseActivity;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 

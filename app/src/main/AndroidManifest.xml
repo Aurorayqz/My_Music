@@ -28,7 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.cnmusic.BaseActivity" />
+        <activity android:name=".BaseActivity" />
         <activity android:name=".ui.WelcomeActivity" />
         <activity android:name=".ui.guide.GuideActivity" />
         <activity android:name=".ui.cnmusic.LocalMusicActivity" />

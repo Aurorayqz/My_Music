@@ -3,16 +3,24 @@ package aurorayqz.packagecom.myapplication;
 import com.bilibili.magicasakura.utils.ThemeUtils;
 import android.app.Application;
 import android.content.Context;
+import android.os.Environment;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 
 import aurorayqz.packagecom.myapplication.common.util.ThemeHelper;
 
 import com.bilibili.magicasakura.utils.ThemeUtils;
+import com.facebook.cache.disk.DiskCacheConfig;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.cache.MemoryCacheParams;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.common.internal.Supplier;
 
 
 public class MyApplication extends Application implements ThemeUtils.switchColor{
     public static Context context;
+    private static int MAX_MEM = (int) Runtime.getRuntime().maxMemory() / 4;
+
 
     private static MyApplication instance;
 
@@ -20,13 +28,56 @@ public class MyApplication extends Application implements ThemeUtils.switchColor
         return instance;
     }
 
+
     @Override
     public void onCreate() {
+        frescoInit();
         super.onCreate();
         context = this;
         instance = this;
         ThemeUtils.setSwitchColor(this);
 
+    }
+
+    private void frescoInit() {
+        Fresco.initialize(this, getConfigureCaches(this));
+    }
+
+    private ImagePipelineConfig getConfigureCaches(Context context) {
+        final MemoryCacheParams bitmapCacheParams = new MemoryCacheParams(
+                MAX_MEM,// 内存缓存中总图片的最大大小,以字节为单位。
+                Integer.MAX_VALUE,// 内存缓存中图片的最大数量。
+                MAX_MEM,// 内存缓存中准备清除但尚未被删除的总图片的最大大小,以字节为单位。
+                Integer.MAX_VALUE,// 内存缓存中准备清除的总图片的最大数量。
+                Integer.MAX_VALUE / 10);// 内存缓存中单个图片的最大大小。
+
+        Supplier<MemoryCacheParams> mSupplierMemoryCacheParams = new Supplier<MemoryCacheParams>() {
+            @Override
+            public MemoryCacheParams get() {
+                return bitmapCacheParams;
+            }
+        };
+        ImagePipelineConfig.Builder builder = ImagePipelineConfig.newBuilder(context)
+                .setDownsampleEnabled(true);
+        builder.setBitmapMemoryCacheParamsSupplier(mSupplierMemoryCacheParams);
+
+
+        //小图片的磁盘配置
+        DiskCacheConfig diskSmallCacheConfig = DiskCacheConfig.newBuilder(context)
+                .setBaseDirectoryPath(context.getApplicationContext().getCacheDir())//缓存图片基路径
+                .build();
+
+        //默认图片的磁盘配置
+        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context)
+                .setBaseDirectoryPath(Environment.getExternalStorageDirectory().getAbsoluteFile())//缓存图片基路径
+                .build();
+
+        //缓存图片配置
+        ImagePipelineConfig.Builder configBuilder = ImagePipelineConfig.newBuilder(context)
+                .setBitmapMemoryCacheParamsSupplier(mSupplierMemoryCacheParams)//内存缓存配置（一级缓存，已解码的图片）
+                .setMainDiskCacheConfig(diskCacheConfig)//磁盘缓存配置（总，三级缓存）
+                ;
+        return builder.build();
     }
 
     @Override

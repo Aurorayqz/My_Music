@@ -4,17 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 
 import aurorayqz.packagecom.myapplication.R;
-import aurorayqz.packagecom.myapplication.ui.cnmusic.BaseActivity;
-import aurorayqz.packagecom.myapplication.ui.cnmusic.MainActivity;
-import aurorayqz.packagecom.myapplication.ui.guide.GuideActivity;
+import aurorayqz.packagecom.myapplication.BaseActivity;
 
 public class WelcomeActivity extends BaseActivity {
 
