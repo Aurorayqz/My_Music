@@ -115,10 +115,10 @@ public class BottomFragment extends BaseFragment implements OnSongchangeListener
             case R.id.control:
                 if(MusicPlayerManager.get().getState() == PlaybackStateCompat.STATE_PLAYING){
                     MusicPlayerManager.get().pause();
-                    mPlayPause.setImageResource(R.drawable.play_rdi_btn_play);
+                    mPlayPause.setImageResource(R.drawable.playbar_btn_play);
                 }else if(MusicPlayerManager.get().getState() == PlaybackStateCompat.STATE_PAUSED){
                     MusicPlayerManager.get().play();
-                    mPlayPause.setImageResource(R.drawable.play_rdi_btn_pause);
+                    mPlayPause.setImageResource(R.drawable.playbar_btn_pause);
                 }
                 break;
         }

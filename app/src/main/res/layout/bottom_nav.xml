@@ -11,10 +11,10 @@
 
     <LinearLayout
         android:id="@+id/linear"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="-3dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:orientation="horizontal">
 
         <com.facebook.drawee.view.SimpleDraweeView
@@ -23,9 +23,9 @@
             android:layout_height="43dp"
             android:layout_marginLeft="6dp"
             android:layout_marginTop="3dp"
+            android:layout_weight="0"
             fresco:placeholderImage="@drawable/placeholder_disk_210"
-            fresco:placeholderImageScaleType="fitXY"
-            android:layout_weight="0" />
+            fresco:placeholderImageScaleType="fitXY" />
 
         <LinearLayout
             android:layout_width="165dp"
@@ -60,16 +60,16 @@
             android:layout_height="43dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="click_last"
-            app:imageTint="@color/theme_color_primary"
-            android:src="@drawable/playbar_btn_playlist" />
+            android:src="@drawable/playbar_btn_playlist"
+            app:imageTint="@color/theme_color_primary" />
 
         <com.bilibili.magicasakura.widgets.TintImageView
             android:id="@+id/control"
             android:layout_width="41dp"
             android:layout_height="46dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:imageTint="@color/theme_color_primary"
-            android:src="@drawable/playbar_btn_play" />
+            android:src="@drawable/playbar_btn_play"
+            app:imageTint="@color/theme_color_primary" />
 
         <com.bilibili.magicasakura.widgets.TintImageView
             android:id="@+id/play_next"
@@ -77,9 +77,10 @@
             android:layout_height="43dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:onClick="click_next"
-            app:imageTint="@color/theme_color_primary"
-            android:src="@drawable/playbar_btn_next" />
+            android:src="@drawable/playbar_btn_next"
+            app:imageTint="@color/theme_color_primary" />
     </LinearLayout>
+
     <SeekBar
         android:id="@+id/song_progress_normal"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
