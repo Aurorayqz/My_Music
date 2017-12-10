@@ -2,11 +2,7 @@ package aurorayqz.packagecom.myapplication.ui.guide;
 
 
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.ui.widget.CustomView;

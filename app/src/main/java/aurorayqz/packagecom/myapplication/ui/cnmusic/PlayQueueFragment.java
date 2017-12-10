@@ -30,7 +30,7 @@ import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.music.MusicPlaylist;
 import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
-import aurorayqz.packagecom.myapplication.service.OnSongchangeListener;
+import aurorayqz.packagecom.myapplication.service.OnSongChangedListener;
 import aurorayqz.packagecom.myapplication.ui.adapter.OnItemClickListener;
 import aurorayqz.packagecom.myapplication.ui.adapter.PlayListAdapter;
 import aurorayqz.packagecom.myapplication.ui.widget.DividerItemDecoration;
@@ -41,7 +41,7 @@ import butterknife.OnClick;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayQueueFragment extends DialogFragment implements OnSongchangeListener {
+public class PlayQueueFragment extends DialogFragment implements OnSongChangedListener {
 
     @Bind(R.id.playlist_addto)
     TextView mPlaylistAddto;

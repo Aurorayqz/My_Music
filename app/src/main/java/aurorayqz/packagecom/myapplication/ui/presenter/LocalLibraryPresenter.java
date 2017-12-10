@@ -1,11 +1,11 @@
 package aurorayqz.packagecom.myapplication.ui.presenter;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.List;
 
 import aurorayqz.packagecom.myapplication.common.util.LocalMusicLibrary;
+import aurorayqz.packagecom.myapplication.data.Album;
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.model.event.LocalIView;
 import rx.Observable;
@@ -24,25 +24,34 @@ import rx.schedulers.Schedulers;
  */
 public class LocalLibraryPresenter {
 
-    private LocalIView.LocalMusic mLocalMusic;
 
-    private Context mContext;
+    private LocalIView.LocalMusic localMusic;
+    private LocalIView.LocalAlbum localAlbum;
+    private LocalIView.LocalArtist localArtist;
 
+    private Context context;
 
     public LocalLibraryPresenter(LocalIView.LocalMusic localMusic, Context context) {
-        this.mLocalMusic = localMusic;
-        this.mContext = context;
+        this.localMusic = localMusic;
+        this.context = context;
     }
 
-    /***
-     * 请求获取本地歌曲
-     */
-    public void requestMusic(){
+    public LocalLibraryPresenter(LocalIView.LocalAlbum localAlbum, Context context) {
+        this.localAlbum = localAlbum;
+        this.context = context;
+    }
+
+    public LocalLibraryPresenter(LocalIView.LocalArtist localArtist, Context context) {
+        this.localArtist = localArtist;
+        this.context = context;
+    }
+
+    public void requestMusic() {
         Observable.create(
                 new Observable.OnSubscribe<List<Song>>() {
                     @Override
                     public void call(Subscriber<? super List<Song>> subscriber) {
-                        List<Song> songs = LocalMusicLibrary.getAllSongs(mContext);
+                        List<Song> songs = LocalMusicLibrary.getAllSongs(context);
                         subscriber.onNext(songs);
                     }
                 }).subscribeOn(Schedulers.newThread())
@@ -50,15 +59,35 @@ public class LocalLibraryPresenter {
                 .subscribe(new Action1<List<Song>>() {
                     @Override
                     public void call(List<Song> songs) {
-                        if (mLocalMusic != null)
-                            mLocalMusic.getLocalMusic(songs);
-
+                        if (localMusic != null)
+                            localMusic.getLocalMusic(songs);
                     }
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-//                        MoeLogger.e(throwable.toString());
-                        Log.e("call: ", "call: "+throwable.toString());
+                    }
+                });
+    }
+
+    public void requestAlbum() {
+        Observable.create(
+                new Observable.OnSubscribe<List<Album>>() {
+                    @Override
+                    public void call(Subscriber<? super List<Album>> subscriber) {
+                        List<Album> albums = LocalMusicLibrary.getAllAlbums(context);
+                        subscriber.onNext(albums);
+                    }
+                }).subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Album>>() {
+                    @Override
+                    public void call(List<Album> albums) {
+                        if (localAlbum != null)
+                            localAlbum.getLocalAlbum(albums);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
                     }
                 });
     }

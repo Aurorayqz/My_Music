@@ -8,7 +8,7 @@ import aurorayqz.packagecom.myapplication.data.Song;
  * Created by Aurorayqz on 2017/12/6.
  */
 
-public interface OnSongchangeListener {
+public interface OnSongChangedListener {
     //歌曲改变的回调
     void onSongChanged(Song song);
     //歌曲后台改变的回调

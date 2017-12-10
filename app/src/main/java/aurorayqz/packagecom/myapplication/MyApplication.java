@@ -9,7 +9,6 @@ import android.support.annotation.ColorRes;
 
 import aurorayqz.packagecom.myapplication.common.util.ThemeHelper;
 
-import com.bilibili.magicasakura.utils.ThemeUtils;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.cache.MemoryCacheParams;

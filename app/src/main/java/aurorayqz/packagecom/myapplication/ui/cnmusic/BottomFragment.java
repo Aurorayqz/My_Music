@@ -21,7 +21,7 @@ import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.common.util.ImageUtils;
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
-import aurorayqz.packagecom.myapplication.service.OnSongchangeListener;
+import aurorayqz.packagecom.myapplication.service.OnSongChangedListener;
 import aurorayqz.packagecom.myapplication.ui.play.PlayingActivity;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,7 +31,7 @@ import rx.Subscription;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BottomFragment extends BaseFragment implements OnSongchangeListener{
+public class BottomFragment extends BaseFragment implements OnSongChangedListener {
 
 
     @Bind(R.id.playbar_img)

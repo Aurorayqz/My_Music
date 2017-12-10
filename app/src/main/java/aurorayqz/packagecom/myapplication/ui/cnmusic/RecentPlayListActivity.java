@@ -22,9 +22,9 @@ import aurorayqz.packagecom.myapplication.BaseActivity;
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.music.MusicPlaylist;
-import aurorayqz.packagecom.myapplication.music.MusicRecentPlayList;
+import aurorayqz.packagecom.myapplication.music.MusicRecentPlaylist;
 import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
-import aurorayqz.packagecom.myapplication.service.OnSongchangeListener;
+import aurorayqz.packagecom.myapplication.service.OnSongChangedListener;
 import aurorayqz.packagecom.myapplication.ui.adapter.OnItemClickListener;
 import aurorayqz.packagecom.myapplication.ui.adapter.RecentPlayAdapter;
 import butterknife.Bind;
@@ -35,7 +35,7 @@ import butterknife.OnClick;
  * @desciption: 最近播放界面
  */
 
-public class RecentPlayListActivity extends BaseActivity implements OnSongchangeListener {
+public class RecentPlayListActivity extends BaseActivity implements OnSongChangedListener {
 
     @Bind(R.id.btnRight)
     Button mBtnRight;
@@ -85,8 +85,8 @@ public class RecentPlayListActivity extends BaseActivity implements OnSongchange
         recentAdapter = new RecentPlayAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(recentAdapter);
-        recentAdapter.setData(MusicRecentPlayList.getInstance().getQueue());
-        musicPlaylist = new MusicPlaylist(MusicRecentPlayList.getInstance().getQueue());
+        recentAdapter.setData(MusicRecentPlaylist.getInstance().getQueue());
+        musicPlaylist = new MusicPlaylist(MusicRecentPlaylist.getInstance().getQueue());
         recentAdapter.setSongClickListener(new OnItemClickListener<Song>() {
             @Override
             public void onItemClick(Song song, int position) {
@@ -144,8 +144,8 @@ public class RecentPlayListActivity extends BaseActivity implements OnSongchange
 
     @Override
     public void onSongChanged(Song song) {
-        recentAdapter.setData(MusicRecentPlayList.getInstance().getQueue());
-        musicPlaylist = new MusicPlaylist(MusicRecentPlayList.getInstance().getQueue());
+        recentAdapter.setData(MusicRecentPlaylist.getInstance().getQueue());
+        musicPlaylist = new MusicPlaylist(MusicRecentPlaylist.getInstance().getQueue());
     }
 
     @Override
@@ -178,7 +178,7 @@ public class RecentPlayListActivity extends BaseActivity implements OnSongchange
         d.setNegativeButton("清空", new DialogWithTitle.OnClickListener() {
             @Override
             public void click(DialogBase dialog, View view) {
-                MusicRecentPlayList.getInstance().clearRecentPlayList();
+                MusicRecentPlaylist.getInstance().clearRecentPlayList();
                 recentAdapter.notifyDataSetChanged();
                 dialog.dismiss();
             }

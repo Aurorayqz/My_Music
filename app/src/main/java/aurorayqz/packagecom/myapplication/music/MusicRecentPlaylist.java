@@ -17,23 +17,23 @@ import rx.schedulers.Schedulers;
  * @desciption: 最近播放列表，最多100首记录
  */
 
-public class MusicRecentPlayList {
+public class MusicRecentPlaylist {
 
     private static final String PLAY_QUEUE = "song_queue";
     private static final int RECENT_COUNT = 10;
-    private static MusicRecentPlayList instance;
+    private static MusicRecentPlaylist instance;
 
     private ArrayList<Song> queue;
 
 
-    public static MusicRecentPlayList getInstance() {
+    public static MusicRecentPlaylist getInstance() {
         if (instance == null) {
-            instance = new MusicRecentPlayList();
+            instance = new MusicRecentPlaylist();
         }
         return instance;
     }
 
-    private MusicRecentPlayList() {
+    private MusicRecentPlaylist() {
         queue = readQueueFromFileCache();
     }
 

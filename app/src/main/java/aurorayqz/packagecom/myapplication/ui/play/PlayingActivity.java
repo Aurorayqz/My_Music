@@ -22,8 +22,7 @@ import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.common.util.ImageUtils;
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
-import aurorayqz.packagecom.myapplication.service.OnSongchangeListener;
-import aurorayqz.packagecom.myapplication.BaseActivity;
+import aurorayqz.packagecom.myapplication.service.OnSongChangedListener;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -31,7 +30,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 
-public class PlayingActivity extends AppCompatActivity implements OnSongchangeListener {
+public class PlayingActivity extends AppCompatActivity implements OnSongChangedListener {
 
 
     /**

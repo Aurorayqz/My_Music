@@ -3,7 +3,7 @@ package aurorayqz.packagecom.myapplication.service;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.SystemClock;
@@ -13,10 +13,27 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import java.io.IOException;
-
 import aurorayqz.packagecom.myapplication.data.Song;
-import aurorayqz.packagecom.myapplication.music.MusicRecentPlayList;
+import aurorayqz.packagecom.myapplication.music.MusicRecentPlaylist;
+
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_PAUSE;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_PLAY_PAUSE;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_SEEK_TO;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_SKIP_TO_QUEUE_ITEM;
+import static android.support.v4.media.session.PlaybackStateCompat.ACTION_STOP;
+import static android.support.v4.media.session.PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_BUFFERING;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_NONE;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_PLAYING;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_SKIPPING_TO_NEXT;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_SKIPPING_TO_PREVIOUS;
+import static android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED;
 
 /***
  * 音乐播放的服务
@@ -28,108 +45,19 @@ import aurorayqz.packagecom.myapplication.music.MusicRecentPlayList;
  */
 
 
-public class MusicService extends Service implements OnSongchangeListener{
-
+public class MusicService extends Service implements OnSongChangedListener {
+    private MediaSessionCompat mediaSession;
+    private PlaybackStateCompat mState;
+    private MusicPlayerManager playerManager;
 
 
     public final Binder mBinder = new MyBinder();
 
 
-    private MusicPlayerManager playerManager;
-    private MediaSessionCompat mediaSession;
-    private PlaybackStateCompat mState;
-
-    @Override
-    public void onSongChanged(Song song) {
-        //添加播放过的歌曲
-        MusicRecentPlayList.getInstance().addPlaySong(song);
-    }
-
-    @Override
-    public void onPlayBackStateChanged(PlaybackStateCompat state) {
-
-    }
-
-    public class MyBinder extends Binder{
-        public MusicService getMusicService(){
+    public class MyBinder extends Binder {
+        public MusicService getMusicService() {
             return MusicService.this;
         }
-    }
-
-
-    /***
-     * 停止服务
-     */
-    public void stopService() {
-        stopSelf();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        //服务的入口方法
-        MediaButtonReceiver.handleIntent(mediaSession, intent);
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    //create,new
-    public static MediaPlayer mediaPlayer = new MediaPlayer();
-
-    public void setUp(){
-        playerManager = MusicPlayerManager.from(this);
-        setUpMediaSession();
-
-    }
-
-    /***
-     * 使用MediaButtonReceiVer来兼容api21之前的版本
-     */
-    private void setUpMediaSession() {
-        ComponentName componentName = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
-        mediaSession = new MediaSessionCompat(this, "fd", componentName, null);
-        //设置处理media button的flag
-        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-        //设置回调
-        mediaSession.setCallback(new MidiaSessionCallback());
-        setState(PlaybackStateCompat.STATE_NONE);
-
-    }
-
-    /****
-     * 设置播放状态
-     */
-    public void setState(int state) {
-        mState = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY|
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE |
-                                PlaybackStateCompat.ACTION_PAUSE|
-                                PlaybackStateCompat.ACTION_SKIP_TO_NEXT|
-                                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS|
-                                PlaybackStateCompat.ACTION_STOP|
-                                PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID|
-                                PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH|
-                                PlaybackStateCompat.ACTION_SEEK_TO|
-                                PlaybackStateCompat.ACTION_SKIP_TO_QUEUE_ITEM
-                )
-                .setState(state,PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,
-                        1.0f, SystemClock.elapsedRealtime())
-                .build();
-
-        mediaSession.setPlaybackState(mState);
-        mediaSession.setActive(state != PlaybackStateCompat.STATE_NONE &&
-                state != PlaybackStateCompat.STATE_STOPPED);
-
-
-    }
-
-    /***
-     * 获取播放状态
-     * @return
-     */
-    public int getState(){
-        Log.e("getState: ", "getState: " +mState.getState());
-        return mState.getState();
     }
 
 
@@ -139,49 +67,184 @@ public class MusicService extends Service implements OnSongchangeListener{
         return mBinder;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        MediaButtonReceiver.handleIntent(mediaSession, intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+
+    @Override
+    public void onSongChanged(Song song) {
+        //add the song to recently playlist when played
+        MusicRecentPlaylist.getInstance().addPlaySong(song);
+        //mediaSession.setMetadata(song.data);
+    }
+
+
+    @Override
+    public void onPlayBackStateChanged(PlaybackStateCompat state) {
+
+    }
+
+    /****
+     * 初始化
+     */
+    public void setUp() {
+        playerManager = MusicPlayerManager.from(this);
+        playerManager.registerListener(this);
+//        MusicNotification.init(this);
+//        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        setUpMediaSession();
+    }
+
+
+    /**
+     * 线控
+     * 使用 {@link MediaButtonReceiver} 来兼容 api21 之前的版本
+     * 使用{@link MediaSessionCompat#setCallback}控制 api21 之后的版本
+     */
+    private void setUpMediaSession() {
+        ComponentName mbr = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
+        mediaSession = new MediaSessionCompat(this, "fd", mbr, null);
+        /* set flags to handle media buttons */
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        /* this is need after Lolipop */
+        mediaSession.setCallback(new MediaSessionCallback());
+        setState(STATE_NONE);
+    }
+
+
+    /****
+     * 设置播放状态
+     *
+     * @param state
+     */
+    public void setState(int state) {
+        mState = new PlaybackStateCompat.Builder()
+                .setActions(
+                        ACTION_PLAY |
+                                ACTION_PAUSE |
+                                ACTION_PLAY_PAUSE |
+                                ACTION_SKIP_TO_NEXT |
+                                ACTION_SKIP_TO_PREVIOUS |
+                                ACTION_STOP |
+                                ACTION_PLAY_FROM_MEDIA_ID |
+                                ACTION_PLAY_FROM_SEARCH |
+                                ACTION_SKIP_TO_QUEUE_ITEM |
+                                ACTION_SEEK_TO)
+                .setState(state, PLAYBACK_POSITION_UNKNOWN,
+                        1.0f, SystemClock.elapsedRealtime())
+                .build();
+        mediaSession.setPlaybackState(mState);
+        mediaSession.setActive(state != PlaybackStateCompat.STATE_NONE
+                && state != PlaybackStateCompat.STATE_STOPPED);
+        for (OnSongChangedListener l : playerManager.getChangedListeners()) {
+            l.onPlayBackStateChanged(mState);
+        }
+    }
+
+
+    /***
+     * 获取播放状态
+     *
+     * @return
+     */
+    public int getState() {
+        Log.e("getState: ", "getState: " + mState);
+        return mState.getState();
+    }
+
+
+    public void setAsForeground() {
+//        startForeground(MusicNotification.NOTIFICATION_ID, MusicNotification.getNotification());
+    }
+
+    public void removeForeground(boolean removeNotification) {
+        stopForeground(removeNotification);
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        playerManager.unregisterListener(this);
         mediaSession.release();
+    }
+
+    public void stopService() {
+        stopSelf();
 
     }
 
 
-
-    public class MidiaSessionCallback extends MediaSessionCompat.Callback {
+    public class MediaSessionCallback extends MediaSessionCompat.Callback {
 
         @Override
         public void onPlay() {
-            super.onPlay();
+            playerManager.resume();
+            setState(STATE_PLAYING);
         }
 
         @Override
         public void onPause() {
-            super.onPause();
+            playerManager.pause();
+            setState(STATE_PAUSED);
         }
 
         @Override
         public void onSkipToNext() {
             super.onSkipToNext();
+            playerManager.playNext();
+            setState(STATE_SKIPPING_TO_NEXT);
         }
 
         @Override
         public void onSkipToPrevious() {
             super.onSkipToPrevious();
+            playerManager.playPrev();
+            setState(STATE_SKIPPING_TO_PREVIOUS);
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            playerManager.seekTo((int) pos);
+            setState(STATE_BUFFERING);
+        }
+
+        @Override
+        public void onSkipToQueueItem(long id) {
+            super.onSkipToQueueItem(id);
+            // playerManager.play(Library.findSongById(id));
+            // setState(STATE_SKIPPING_TO_QUEUE_ITEM);
+        }
+
+        public void onTogglePlay() {
+            if (mState.getState() == STATE_PLAYING) {
+                onPause();
+            } else {
+                onPlay();
+            }
         }
 
         @Override
         public void onStop() {
             super.onStop();
+            playerManager.stop();
+            setState(STATE_STOPPED);
         }
 
         @Override
-        public void onSeekTo(long pos) {
-            super.onSeekTo(pos);
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            boolean handled = false;
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(mediaButtonEvent.getAction())) {
+                if (mState.getState() == STATE_PLAYING) {
+                    onPause();
+                    handled = true;
+                }
+            }
+            return handled;
         }
     }
-
-
 
 }

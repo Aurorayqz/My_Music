@@ -6,9 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
-import aurorayqz.packagecom.myapplication.R;
 
 /**
  * fragment的预加载问题的处理(参考)

@@ -7,12 +7,11 @@ import android.os.PowerManager;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import aurorayqz.packagecom.myapplication.data.Song;
 import aurorayqz.packagecom.myapplication.music.MusicPlaylist;
-import aurorayqz.packagecom.myapplication.ui.cnmusic.RecentPlayListActivity;
 
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_FAST_FORWARDING;
 import static android.support.v4.media.session.PlaybackStateCompat.STATE_PAUSED;
@@ -25,7 +24,8 @@ import static android.support.v4.media.session.PlaybackStateCompat.STATE_STOPPED
  * Created by Aurorayqz on 2017/12/5.
  */
 
-public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener,
+public class MusicPlayerManager implements AudioManager.OnAudioFocusChangeListener,
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener {
 
     private static final String TAG = "MusicPlayer";
@@ -42,10 +42,16 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
     private long currentMediaId = -1;
     private int currentProgress;
 
+
+    /**
+     * This is the value you would use for tis situation:
+     * The user presses "Previous". if the current position in the song is greater then this value,
+     * pressing "Previous" will restart the song, if not it will play the previous song
+     */
     public static final int MAX_DURATION_FOR_REPEAT = 3000;
     private int currentMaxDuration = MAX_DURATION_FOR_REPEAT;
+    private ArrayList<OnSongChangedListener> changedListeners = new ArrayList<>();
 
-    private ArrayList<OnSongchangeListener> changeListeners = new ArrayList<>();
 
     /***
      * 单例实现
@@ -90,6 +96,8 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
     }
 
 
+
+
     /**
      * 创建一个新的播放列表
      *
@@ -113,6 +121,13 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
         play(musicPlaylist.getCurrentPlay());
     }
 
+    public boolean isPlaying(){
+        if(musicService.getState() == PlaybackStateCompat.STATE_PLAYING){
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * 播放歌曲
@@ -121,6 +136,8 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
      */
     public void play(Song song) {
         if (song == null) return;
+//        playFocusGain = true;
+//        tryToGetAudioFocus();
         boolean mediaHasChanged = !(song.getId() == currentMediaId);
         if (mediaHasChanged) {
             currentProgress = 0;
@@ -129,6 +146,8 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
         if (musicService.getState() == STATE_PAUSED && !mediaHasChanged && mediaPlayer != null) {
             configMediaPlayerState();
         } else {
+//            musicService.setState(STATE_STOPPED);
+//            relaxResources(false);
 
             try {
                 createMediaPlayerIfNeeded();
@@ -138,11 +157,11 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
                 mediaPlayer.setDataSource(mContext, song.getUri());
                 mediaPlayer.prepareAsync();
 
-                for (OnSongchangeListener l : changeListeners){
+                for (OnSongChangedListener l : changedListeners) {
                     l.onSongChanged(song);
                 }
 
-
+                musicService.setAsForeground();
             } catch (Exception e) {
                 Log.e(TAG, "playing song:", e);
             }
@@ -157,6 +176,23 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
      * 该方法假设媒体播放器!=零,所以如果你调用它,你必须这样做。
      */
     private void configMediaPlayerState() {
+//        Log.d(TAG, "configMediaPlayerState. mAudioFocus=" + audioFocus);
+//        if (audioFocus == AUDIO_NO_FOCUS_NO_DUCK) {
+        // If we don't have audio focus and can't duck, we have to pause,
+//            if (musicService.getState() == STATE_PLAYING) {
+//                pause();
+//            }
+//        } else {  // we have audio focus:
+//            if (audioFocus == AUDIO_NO_FOCUS_CAN_DUCK) {
+//                mediaPlayer.setVolume(VOLUME_DUCK, VOLUME_DUCK); // we'll be relatively quiet
+//            } else {
+//                if (mediaPlayer != null) {
+//                    mediaPlayer.setVolume(VOLUME_NORMAL, VOLUME_NORMAL); // we can be loud again
+//                } // else do something for remote client.
+//            }
+        // If we were playing when we lost focus, we need to resume playing.
+//            if (playFocusGain) {
+        Log.e(TAG, "configMediaPlayerState: ");
         if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
             Log.d(TAG, "configMediaPlayerState startMediaPlayer. seeking to " + currentProgress);
             if (currentProgress == mediaPlayer.getCurrentPosition()) {
@@ -168,6 +204,9 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
                 musicService.setState(STATE_PLAYING);
             }
         }
+        playFocusGain = false;
+//            }
+//        }
     }
 
 
@@ -179,6 +218,7 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
      */
     private void relaxResources(boolean releaseMediaPlayer) {
 
+        musicService.removeForeground(false);
 
         // stop and release the Media Player, if it's available
         if (releaseMediaPlayer && mediaPlayer != null) {
@@ -249,6 +289,7 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
             }
             relaxResources(false);
             giveUpAudioFocus();
+            musicService.removeForeground(false);
         }
         musicService.setState(STATE_PAUSED);
     }
@@ -262,6 +303,7 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
             mediaPlayer.start();
             musicService.setState(STATE_PLAYING);
             tryToGetAudioFocus();
+            musicService.setAsForeground();
         } else {
             Log.d(TAG, "Not paused or MediaPlayer is null. Player is null: " + (mediaPlayer == null));
         }
@@ -280,6 +322,7 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
             mediaPlayer.reset();
         }
         giveUpAudioFocus();
+        musicService.removeForeground(false);
     }
 
 
@@ -291,6 +334,7 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
         currentProgress = getCurrentProgressInSong();
         giveUpAudioFocus();
         relaxResources(true);
+        musicService.removeForeground(true);
         musicService.stopService();
     }
 
@@ -313,6 +357,17 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
 
         }
     }
+
+
+    public void playOrpause(){
+        if(isPlaying()){
+            pause();
+        }else
+            play();
+    }
+
+
+
 
     /***
      * 设置音量
@@ -375,6 +430,12 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
      * 释放焦点
      */
     private void giveUpAudioFocus() {
+        Log.d(TAG, "giveUpAudioFocus");
+//        if (audioFocus == AUDIO_FOCUSED) {
+//            if (audioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+//                audioFocus = AUDIO_NO_FOCUS_NO_DUCK;
+//            }
+//        }
     }
 
 
@@ -382,6 +443,14 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
      * 尝试获取系统播放焦点
      */
     private void tryToGetAudioFocus() {
+        Log.d(TAG, "tryToGetAudioFocus");
+//        if (audioFocus != AUDIO_FOCUSED) {
+//            int result = audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC,
+//                    AudioManager.AUDIOFOCUS_GAIN);
+//            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+//                audioFocus = AUDIO_FOCUSED;
+//            }
+//        }
     }
 
 
@@ -394,6 +463,9 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
         return musicPlaylist;
     }
 
+    public ArrayList<OnSongChangedListener> getChangedListeners() {
+        return changedListeners;
+    }
 
     /***
      * 设置播放列表
@@ -433,6 +505,9 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
         return 0;
     }
 
+
+
+
     /****
      * 获取当前播放歌曲
      *
@@ -446,6 +521,7 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
 
     /***
      * 获取当前状态
+     *
      * @return
      */
     public int getState() {
@@ -454,14 +530,29 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
         return PlaybackStateCompat.STATE_STOPPED;
     }
 
-    public void registerListener(OnSongchangeListener listener){
-        changeListeners.add(listener);
+
+    /***
+     * 获取当前播放列表
+     */
+    public List<Song> getQueue(){
+
+        return MusicPlayerManager.get().getMusicPlaylist().getQueue();
     }
 
-    public void unregisterListener(OnSongchangeListener listener){
-        changeListeners.remove(listener);
+
+    public void registerListener(OnSongChangedListener l) {
+        changedListeners.add(l);
     }
 
+    public void unregisterListener(OnSongChangedListener l) {
+        changedListeners.remove(l);
+    }
+
+
+    @Override
+    public void onAudioFocusChange(int i) {
+
+    }
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
@@ -488,6 +579,4 @@ public class MusicPlayerManager implements MediaPlayer.OnPreparedListener, Media
     public void onSeekComplete(MediaPlayer mediaPlayer) {
 
     }
-
-
 }
