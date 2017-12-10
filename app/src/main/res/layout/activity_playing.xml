@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="aurorayqz.packagecom.myapplication.ui.play.PlayingActivity">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/albumArt"
@@ -49,9 +46,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
-
                 <ImageView
-                    android:id="@+id/coverImage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
@@ -61,6 +56,12 @@
                     app:layout_heightPercent="77%"
                     app:layout_widthPercent="76%"/>
 
+                <aurorayqz.packagecom.myapplication.ui.widget.AlbumViewPager
+                    android:id="@+id/view_pager"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"/>
 
                 <View
                     android:id="@+id/view_line"
@@ -70,6 +71,7 @@
                     android:background="@drawable/play_topbar_line"/>
 
                 <ImageView
+                    android:visibility="invisible"
                     android:id="@+id/needle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -83,6 +85,7 @@
                     app:layout_marginRightPercent="23%"
 
                     />
+
             </android.support.percent.PercentRelativeLayout>
 
         </FrameLayout>
@@ -100,8 +103,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="22dp"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -142,6 +144,12 @@
                 android:text="获取封面和歌词"
                 android:textAlignment="center"/>
 
+            <aurorayqz.packagecom.myapplication.ui.widget.lrc.LrcView
+                android:id="@+id/lrcview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/volume_layout"
+                android:layout_marginTop="10dp"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -214,7 +222,7 @@
                     android:textColor="@color/white_text"
                     android:textSize="10sp"/>
 
-                <SeekBar
+                <aurorayqz.packagecom.myapplication.ui.widget.PlayerSeekBar
                     android:id="@+id/play_seek"
                     style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                     android:layout_width="0dp"
@@ -286,7 +294,5 @@
 
             </LinearLayout>
         </LinearLayout>
-
     </android.support.percent.PercentRelativeLayout>
-
 </FrameLayout>
