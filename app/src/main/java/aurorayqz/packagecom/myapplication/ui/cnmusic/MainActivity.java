@@ -24,13 +24,15 @@ import java.util.List;
 
 import aurorayqz.packagecom.myapplication.BaseActivity;
 import aurorayqz.packagecom.myapplication.R;
+import aurorayqz.packagecom.myapplication.ui.adapter.MenuItemAdapter;
 import aurorayqz.packagecom.myapplication.ui.album.AlbumFragment;
+import aurorayqz.packagecom.myapplication.ui.dynamic.DynamicFragment;
 import aurorayqz.packagecom.myapplication.ui.local.LocalFragment;
 import aurorayqz.packagecom.myapplication.ui.widget.CustomViewPager;
 
 public class MainActivity extends BaseActivity {
     private ActionBar ab;
-    private ImageView barnet, barmusic;
+    private ImageView barnet, barmusic,barfriends;
     private ArrayList<ImageView> tabs = new ArrayList<>();
     private DrawerLayout drawerLayout;
     private ListView mLvLeftMenu;
@@ -46,7 +48,7 @@ public class MainActivity extends BaseActivity {
 
         barnet = (ImageView) findViewById(R.id.bar_net);
         barmusic = (ImageView) findViewById(R.id.bar_music);
-        barmusic = (ImageView) findViewById(R.id.bar_music);
+        barfriends = (ImageView) findViewById(R.id.bar_friends);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mLvLeftMenu = (ListView) findViewById(R.id.id_lv_left_menu);
@@ -76,14 +78,17 @@ public class MainActivity extends BaseActivity {
         //添加tab标签
         tabs.add(barnet);
         tabs.add(barmusic);
+        tabs.add(barfriends);
 
 
         final CustomViewPager customViewPager = (CustomViewPager) findViewById(R.id.main_viewpager);
         final LocalFragment localFragment = new LocalFragment();
-        final AlbumFragment tabNetPagerFragment = new AlbumFragment();
+        final AlbumFragment albumFragment = new AlbumFragment();
+        final DynamicFragment dynamicFragment = new DynamicFragment();
         CustomViewPagerAdapter customViewPagerAdapter = new CustomViewPagerAdapter(getSupportFragmentManager());
-        customViewPagerAdapter.addFragment(tabNetPagerFragment);
+        customViewPagerAdapter.addFragment(albumFragment);
         customViewPagerAdapter.addFragment(localFragment);
+        customViewPagerAdapter.addFragment(dynamicFragment);
         customViewPager.setAdapter(customViewPagerAdapter);
         customViewPager.setCurrentItem(1);
         barmusic.setSelected(true);
@@ -116,6 +121,12 @@ public class MainActivity extends BaseActivity {
                 customViewPager.setCurrentItem(1);
             }
         });
+        barfriends.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                customViewPager.setCurrentItem(2);
+            }
+        });
 
     }
 
@@ -125,7 +136,7 @@ public class MainActivity extends BaseActivity {
     private void setUpDrawer() {
         LayoutInflater inflater = LayoutInflater.from(this);
         mLvLeftMenu.addHeaderView(inflater.inflate(R.layout.nav_header_main, mLvLeftMenu, false));
-        //mLvLeftMenu.setAdapter(new MenuItemAdapter(this));
+        mLvLeftMenu.setAdapter(new MenuItemAdapter(this));
         mLvLeftMenu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -201,19 +212,12 @@ public class MainActivity extends BaseActivity {
      */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if ((System.currentTimeMillis() - time > 1000)) {
-                Toast.makeText(this, "再按一次返回桌面", Toast.LENGTH_SHORT).show();
-                time = System.currentTimeMillis();
-            } else {
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                startActivity(intent);
-            }
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            moveTaskToBack(true);
             return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
         }
-
+        return super.onKeyDown(keyCode, event);
     }
+
+
 }
