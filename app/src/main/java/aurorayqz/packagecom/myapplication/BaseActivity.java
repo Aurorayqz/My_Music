@@ -1,10 +1,14 @@
 package aurorayqz.packagecom.myapplication;
 
+import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
@@ -36,21 +40,14 @@ public class BaseActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //服务的初始化
+        //启动音乐服务
         MusicPlayerManager.startServiceIfNecessary(getApplicationContext());
         showQuickControl(true);
-
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Unbind from the service
-        unbindService();
-    }
 
+    //解绑服务
     public void unbindService() {
-
     }
     /**
      * 跳转到音乐播放界面
@@ -63,6 +60,17 @@ public class BaseActivity extends AppCompatActivity  {
         }
         PlayingActivity.open(this);
         return true;
+    }
+
+    /**
+     * activity的跳转
+     *
+     * @param activity
+     */
+    public void startActivity(Class activity) {
+        Intent i = new Intent();
+        i.setClass(this, activity);
+        startActivity(i);
     }
 
     /**
@@ -101,5 +109,29 @@ public class BaseActivity extends AppCompatActivity  {
         }
     }
 
-}
+    public void changeActionbarSkinMode(ActionBar mActionbar, boolean isNight){
+        int actionbarColor=0;
+        if(isNight) {
+            actionbarColor= R.color.actionbar_night;
+        }else{
+            actionbarColor=R.color.actionbar_day;
+        }
+        setBackgroundAlpha(mActionbar, getResources().getColor(actionbarColor));
+    }
 
+    public void setBackgroundAlpha(ActionBar view, int baseColor) {
+        int rgb = baseColor;
+        Drawable drawable = new ColorDrawable(rgb);
+        if(view!=null)
+            view.setBackgroundDrawable(drawable);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService();
+        MyApplication.getInstance().removeActivity(this);
+    }
+
+
+}

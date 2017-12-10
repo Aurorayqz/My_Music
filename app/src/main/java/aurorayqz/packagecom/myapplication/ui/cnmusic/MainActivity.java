@@ -1,6 +1,5 @@
 package aurorayqz.packagecom.myapplication.ui.cnmusic;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,30 +16,42 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import aurorayqz.packagecom.myapplication.BaseActivity;
+import aurorayqz.packagecom.myapplication.MyApplication;
+import aurorayqz.packagecom.myapplication.PermissionActivity;
 import aurorayqz.packagecom.myapplication.R;
+import aurorayqz.packagecom.myapplication.service.MusicPlayerManager;
 import aurorayqz.packagecom.myapplication.ui.adapter.MenuItemAdapter;
 import aurorayqz.packagecom.myapplication.ui.album.AlbumFragment;
 import aurorayqz.packagecom.myapplication.ui.dynamic.DynamicFragment;
 import aurorayqz.packagecom.myapplication.ui.local.LocalFragment;
 import aurorayqz.packagecom.myapplication.ui.widget.CustomViewPager;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends PermissionActivity {
     private ActionBar ab;
     private ImageView barnet, barmusic,barfriends;
     private ArrayList<ImageView> tabs = new ArrayList<>();
     private DrawerLayout drawerLayout;
     private ListView mLvLeftMenu;
     private long time = 0;
+    private boolean isNight = false;
 
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+
+        //夜间模式
+        if (MyApplication.appConfig.getNightModeSwitch()) {
+            this.setTheme(R.style.Theme_setting_night);
+            isNight = true;
+        } else {
+            this.setTheme(R.style.Theme_setting_day);
+            isNight = false;
+        }
+
         setContentView(R.layout.activity_main);
 
 
@@ -142,11 +153,40 @@ public class MainActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 1:
+                        //当前的模式
+                        boolean isNightMode = MyApplication.appConfig.getNightModeSwitch();
+                        MyApplication.appConfig.setNightModeSwitch(!isNightMode);
+                        changeSkinMode(!isNightMode);
+                        drawerLayout.closeDrawer(Gravity.LEFT);
+                        break;
+                    case 2:
+                        //主题换肤
+                        break;
+                    case 3:
+                        //定时关闭音乐
+                        TimingFragment fragment3 = new TimingFragment();
+                        fragment3.show(getSupportFragmentManager(), "timing");
                         drawerLayout.closeDrawers();
                         break;
+                    case 4:
+                        //清除缓存
+                        break;
+                    case 5:
+                        //退出
+                        if (MusicPlayerManager.get().isPlaying()) {
+                            MusicPlayerManager.get().pause();
+                        }
+                        unbindService();
+                        finish();
+                        break;
+
                 }
             }
         });
+    }
+
+    public void changeSkinMode(boolean isNight) {
+        changeActionbarSkinMode(ab, isNight);
     }
 
     /***

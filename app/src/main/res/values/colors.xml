@@ -278,5 +278,15 @@
     <color name="smallRed">#cda2a6</color>
     <color name="test_color">#696969</color>
 
+    <color name="actionbar_day">#d20000</color>
+    <color name="actionbar_night">#2A2A2A</color>
+    <color name="bg_night">#ff000000</color>
+    <color name="bg_day">#FFFFFF</color>
+    <color name="line_day">#d20000</color>
+    <color name="line_night">#d20000</color>
+    <color name="text_day">#88000000</color>
+    <color name="text_night">#ffffffff</color>
+
+
 
 </resources>

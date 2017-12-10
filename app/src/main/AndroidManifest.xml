@@ -11,6 +11,11 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".MyApplication"
@@ -33,6 +38,30 @@
         <activity android:name=".ui.cnmusic.LocalMusicActivity" />
         <activity android:name=".ui.cnmusic.RecentPlayListActivity" />
 
+        <!-- ShareSDK的activity -->
+        <activity
+            android:name="com.mob.tools.MobUIShell"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <data android:scheme="tencent100371282" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!-- 填写您从Mob开发者后台中得到的Appkey和AppSecret -->
+        <meta-data
+            android:name="Mob-AppKey"
+            android:value="22f45bb535359" />
+        <meta-data
+            android:name="Mob-AppSecret"
+            android:value="83226f445f26b9d268d040eeb19ed597" />
+
         <service
             android:name=".service.MusicService"
             android:enabled="true"
@@ -52,7 +81,8 @@
         </receiver>
 
         <activity android:name=".ui.play.PlayingActivity" />
-        <activity android:name=".ui.CollectionCreateActivity"></activity>
+        <activity android:name=".ui.CollectionCreateActivity" />
+        <activity android:name=".PermissionActivity"></activity>
     </application>
 
 </manifest>

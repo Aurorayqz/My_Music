@@ -1,6 +1,8 @@
 package aurorayqz.packagecom.myapplication;
 
 import com.bilibili.magicasakura.utils.ThemeUtils;
+
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.os.Environment;
@@ -8,25 +10,46 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 
 import aurorayqz.packagecom.myapplication.common.util.ThemeHelper;
+import okhttp3.OkHttpClient;
 
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.cache.MemoryCacheParams;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.common.internal.Supplier;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.cache.CacheEntity;
+import com.lzy.okgo.cache.CacheMode;
+import com.mob.MobApplication;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
-public class MyApplication extends Application implements ThemeUtils.switchColor{
+public class MyApplication extends MobApplication implements ThemeUtils.switchColor{
     public static Context context;
     private static int MAX_MEM = (int) Runtime.getRuntime().maxMemory() / 4;
 
-
+    /**
+     * application singleton
+     */
     private static MyApplication instance;
+    public static AppConfig appConfig;
 
-    public static MyApplication getInstance(){
+    public static MyApplication getInstance() {
+
         return instance;
     }
 
+    private void frescoInit() {
+        Fresco.initialize(this, getConfigureCaches(this));
+    }
+
+    /**
+     * 运用list来保存每一个activity
+     * activity list
+     */
+    private List<Activity> mList;
 
     @Override
     public void onCreate() {
@@ -34,49 +57,17 @@ public class MyApplication extends Application implements ThemeUtils.switchColor
         super.onCreate();
         context = this;
         instance = this;
+        mList = new LinkedList<>();
         ThemeUtils.setSwitchColor(this);
+        //OKGO的基本配置
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        OkGo.getInstance().init(this)                       //必须调用初始化
+                .setOkHttpClient(builder.build())               //建议设置OkHttpClient，不设置将使用默认的
+                .setCacheMode(CacheMode.NO_CACHE)               //全局统一缓存模式，默认不使用缓存，可以不传
+                .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE)   //全局统一缓存时间，默认永不过期，可以不传
+                .setRetryCount(3);
+        appConfig = new AppConfig(context);
 
-    }
-
-    private void frescoInit() {
-        Fresco.initialize(this, getConfigureCaches(this));
-    }
-
-    private ImagePipelineConfig getConfigureCaches(Context context) {
-        final MemoryCacheParams bitmapCacheParams = new MemoryCacheParams(
-                MAX_MEM,// 内存缓存中总图片的最大大小,以字节为单位。
-                Integer.MAX_VALUE,// 内存缓存中图片的最大数量。
-                MAX_MEM,// 内存缓存中准备清除但尚未被删除的总图片的最大大小,以字节为单位。
-                Integer.MAX_VALUE,// 内存缓存中准备清除的总图片的最大数量。
-                Integer.MAX_VALUE / 10);// 内存缓存中单个图片的最大大小。
-
-        Supplier<MemoryCacheParams> mSupplierMemoryCacheParams = new Supplier<MemoryCacheParams>() {
-            @Override
-            public MemoryCacheParams get() {
-                return bitmapCacheParams;
-            }
-        };
-        ImagePipelineConfig.Builder builder = ImagePipelineConfig.newBuilder(context)
-                .setDownsampleEnabled(true);
-        builder.setBitmapMemoryCacheParamsSupplier(mSupplierMemoryCacheParams);
-
-
-        //小图片的磁盘配置
-        DiskCacheConfig diskSmallCacheConfig = DiskCacheConfig.newBuilder(context)
-                .setBaseDirectoryPath(context.getApplicationContext().getCacheDir())//缓存图片基路径
-                .build();
-
-        //默认图片的磁盘配置
-        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context)
-                .setBaseDirectoryPath(Environment.getExternalStorageDirectory().getAbsoluteFile())//缓存图片基路径
-                .build();
-
-        //缓存图片配置
-        ImagePipelineConfig.Builder configBuilder = ImagePipelineConfig.newBuilder(context)
-                .setBitmapMemoryCacheParamsSupplier(mSupplierMemoryCacheParams)//内存缓存配置（一级缓存，已解码的图片）
-                .setMainDiskCacheConfig(diskCacheConfig)//磁盘缓存配置（总，三级缓存）
-                ;
-        return builder.build();
     }
 
     @Override
@@ -146,5 +137,123 @@ public class MyApplication extends Application implements ThemeUtils.switchColor
                 return context.getResources().getIdentifier(theme, "color", getPackageName());
         }
         return -1;
+    }
+
+
+    private ImagePipelineConfig getConfigureCaches(Context context) {
+        final MemoryCacheParams bitmapCacheParams = new MemoryCacheParams(
+                MAX_MEM,// 内存缓存中总图片的最大大小,以字节为单位。
+                Integer.MAX_VALUE,// 内存缓存中图片的最大数量。
+                MAX_MEM,// 内存缓存中准备清除但尚未被删除的总图片的最大大小,以字节为单位。
+                Integer.MAX_VALUE,// 内存缓存中准备清除的总图片的最大数量。
+                Integer.MAX_VALUE / 10);// 内存缓存中单个图片的最大大小。
+
+        Supplier<MemoryCacheParams> mSupplierMemoryCacheParams = new Supplier<MemoryCacheParams>() {
+            @Override
+            public MemoryCacheParams get() {
+                return bitmapCacheParams;
+            }
+        };
+        ImagePipelineConfig.Builder builder = ImagePipelineConfig.newBuilder(context)
+                .setDownsampleEnabled(true);
+        builder.setBitmapMemoryCacheParamsSupplier(mSupplierMemoryCacheParams);
+
+        //默认图片的磁盘配置
+        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context)
+                .setBaseDirectoryPath(Environment.getExternalStorageDirectory().getAbsoluteFile())//缓存图片基路径
+                .build();
+
+        return builder.build();
+    }
+
+    /**
+     * 添加一个activity到列表中<br/>
+     * add Activity
+     *
+     * @param activity
+     */
+    public void addActivity(Activity activity) {
+        mList.add(activity);
+    }
+
+    /**
+     * 从列表中删除一个activity<br/>
+     * remove Activity
+     *
+     * @param activity
+     */
+    public void removeActivity(Activity activity) {
+        try {
+            mList.remove(activity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 判断是否已经运行该activity<br/>
+     *
+     * @param activity
+     * @return
+     */
+    public boolean containActivity(Class activity) {
+        for (Activity act : mList) {
+            if (act.getClass() == activity) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 获取已经运行的Activity<br/>
+     *
+     * @param activity
+     * @return
+     */
+    public Activity getActivity(Class activity) {
+        for (Activity act : mList) {
+            if (act.getClass() == activity) {
+                return act;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 关闭list内的每一个activity<br/>
+     * close all activity
+     */
+    public void closeAllActivity() {
+        try {
+            for (Activity activity : mList) {
+                if (activity != null && !activity.isFinishing())
+                    activity.finish();
+            }
+            mList.clear();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 获得最后打开的activity<br/>
+     * get last opened activity
+     */
+    public Activity getCurActivity() {
+        if (mList.size() > 0)
+            return mList.get(mList.size() - 1);
+        return null;
+    }
+
+
+    /**
+     * 关闭list内的每一个activity并且退出应用<br/>
+     * close all activity and exit app
+     */
+    public void exit() {
+        closeAllActivity();
+        //System.exit(0);
     }
 }
