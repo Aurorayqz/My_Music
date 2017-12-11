@@ -1,20 +1,25 @@
 package aurorayqz.packagecom.myapplication.common.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+
+import aurorayqz.packagecom.myapplication.common.net.callbacks.ImageCallback;
 
 /**
  * Created by Aurorayqz on 2017/12/10.
  */
 public class GlideUtils {
+    private RequestManager glideRequest;
 
     /***
      * 图片加载
@@ -49,5 +54,22 @@ public class GlideUtils {
 
     }
 
+    public static void withRoundImage(Context context, String url,ImageView imageView){
+        Glide.with(context)
+                .load(url)
+                .transform(new GlideCircleTransform(context)).into(imageView);
+    }
+
+    public static void getBitmapWithUrl(Context context, String url, final ImageCallback callback){
+        Glide.with(context).load(url).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                if(resource !=null){
+                    callback.getImageSuccess(resource);
+                }else
+                    callback.getImageFail();
+            }
+        });
+    }
 
 }

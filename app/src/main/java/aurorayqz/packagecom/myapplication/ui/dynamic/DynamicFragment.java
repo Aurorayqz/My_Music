@@ -4,27 +4,49 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.Gson;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import aurorayqz.packagecom.myapplication.R;
 import aurorayqz.packagecom.myapplication.common.net.ApiStore;
 import aurorayqz.packagecom.myapplication.data.DynamicInfo;
 import aurorayqz.packagecom.myapplication.ui.adapter.RecyclerViewVideoAdapter;
+import aurorayqz.packagecom.myapplication.ui.widget.EndLessOnScrollListener;
+import com.google.gson.Gson;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.AbsCallback;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import aurorayqz.packagecom.myapplication.ui.widget.EndLessOnScrollListener;
 import butterknife.ButterKnife;
 import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.scalars.ScalarsConverterFactory;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
 /**
  * Created by Aurorayqz on 2017/12/10.
  */
@@ -36,6 +58,9 @@ public class DynamicFragment extends Fragment {
     private RecyclerViewVideoAdapter adapterVideoList;
     private Retrofit mRetrofit;
     private ApiStore mRestService;
+    private LinearLayoutManager mLinearLayoutManager;
+    private List<DynamicInfo.BodyBean.DetailBean> resultData = new ArrayList<>();
+    private int num = 1;
     public DynamicFragment() {
         // Required empty public constructor
     }
@@ -48,48 +73,45 @@ public class DynamicFragment extends Fragment {
         View inflate = inflater.inflate(R.layout.fragment_dynamic, container, false);
         ButterKnife.bind(this, inflate);
         recyclerView = (RecyclerView) inflate.findViewById(R.id.recyclerview);
-        initData();
+        initData(num);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mLinearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLinearLayoutManager);
         adapterVideoList = new RecyclerViewVideoAdapter(getActivity());
         recyclerView.setAdapter(adapterVideoList);
 
+
+        recyclerView.addOnScrollListener(new EndLessOnScrollListener(mLinearLayoutManager) {
+            @Override
+            public void onLoadMore(int currentPage) {
+                initData(currentPage++);
+                Log.e("onLoadMore: ", "onLoadMore: ");
+            }
+        });
         return inflate;
     }
 
     /****
      * 数据的初始化
      */
-    private void initData() {
+    private void initData(int num) {
 
-        mRetrofit = new Retrofit.Builder()
-                .baseUrl(mRestService.BASE_PARAMETERS_DYNAMIC)
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-                //必须加
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build();
-        //获取api接口的实现类的对象
-        mRestService = mRetrofit.create(ApiStore.class);
-
-        Observable<DynamicInfo> observable = mRestService.getDynamicInfo("6314");
-        observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<DynamicInfo>() {
+        OkGo.<String>get(ApiStore.DYNAMIC_URL + num)
+                .execute(new StringCallback() {
                     @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onNext(DynamicInfo dynamicInfo) {
-                        List<DynamicInfo.ResultBean> result = dynamicInfo.getResult();
-                        adapterVideoList.setData(result);
+                    public void onSuccess(Response<String> response) {
+                        String body = response.body();
+                        String decodeStr = null;
+                        try {
+                            decodeStr = URLDecoder.decode(body, "utf-8");
+                            Gson gson = new Gson();
+                            DynamicInfo dynamicInfo = gson.fromJson(decodeStr, DynamicInfo.class);
+                            List<DynamicInfo.BodyBean.DetailBean> result = dynamicInfo.getBody().getDetail();
+                            resultData.addAll(result);
+                            adapterVideoList.setData(resultData);
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
                     }
                 });
 

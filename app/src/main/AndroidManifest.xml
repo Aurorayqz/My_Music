@@ -82,7 +82,9 @@
 
         <activity android:name=".ui.play.PlayingActivity" />
         <activity android:name=".ui.CollectionCreateActivity" />
-        <activity android:name=".PermissionActivity"></activity>
+        <activity android:name=".PermissionActivity" />
+        <activity android:name=".ui.album.NewSongDetailActivity" />
+        <activity android:name=".ui.album.MusicDetailActivity"></activity>
     </application>
 
 </manifest>

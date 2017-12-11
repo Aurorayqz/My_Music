@@ -287,6 +287,16 @@
     <color name="text_day">#88000000</color>
     <color name="text_night">#ffffffff</color>
 
+    <color name="green">#4CAF50</color>
+    <color name="green_dark">#2E7D32</color>
+    <color name="green_trans">#994CAF50</color>
+
+    <color name="green_light">#8BC34A</color>
+    <color name="green_light_dark">#558B2F</color>
+    <color name="green_light_trans">#998BC34A</color>
+    <color name="menu_item_blue_dark">#2F79DB</color>
+    <color name="blue_dark">#1565C0</color>
+    <color name="addToPlayListDisabled">#ff888888</color>
 
 
 </resources>

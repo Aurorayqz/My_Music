@@ -23,21 +23,21 @@ public class Song implements Serializable {
 
     private long id;
     private String title;
-    private long albumId;
-    private String albumName;
+    private long albumId;//专辑Id
+    private String albumName;//专辑名称
     private long artistId;
     private String artistName;
     private String url;
     private int size;
-    private int duration;
-    private long date;
-    private String quality;
-    private int trackNumber;
-    private String description;
-    private String coverUrl;
-    private int download;
-    private String path;
-    private boolean status;
+    private int duration;//歌曲长度
+    private long date;//发布时间
+    private String quality;//音质
+    private int trackNumber;//标志位数值
+    private String description;//描述
+    private String coverUrl;//图片URL
+    private int download;//是否下载
+    private String path;//本地路径
+    private boolean status;//判断是本地歌曲还是网络歌曲
 
     public Song() {
     }
